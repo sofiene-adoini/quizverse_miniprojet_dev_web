@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+  <meta name="description" content="Answer the questions and get your score instantly.">
+  <title>Quiz – QuizVerse</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="QuizVerse home">
+      <span class="logo__mark" aria-hidden="true">Q</span>
+      <span>QuizVerse</span>
+    </a>
+    <nav class="nav" aria-label="Quiz">
+      <a class="btn btn--ghost btn--small" href="index.html">Quit quiz</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span class="visually-hidden">Dark mode</span><span class="theme-toggle__icon" aria-hidden="true"></span></button>
+    </nav>
+  </header>
+
+  <main id="main" class="container container--narrow">
+
+    <section id="quiz-section" class="quiz" aria-labelledby="quiz-title">
+      <div class="quiz__top">
+        <div>
+          <h1 id="quiz-title" class="quiz__title">Quiz</h1>
+          <p id="counter" class="quiz__counter">Question 1</p>
+          <p id="level-info" class="quiz__counter"></p>
+        </div>
+        <div class="quiz__stats">
+          <p class="chip">Points <strong id="score">0</strong></p>
+          <p class="chip">Streak <strong id="streak">0</strong></p>
+          <p class="chip chip--timer" id="timer-chip"><span class="visually-hidden">Time left: </span><strong id="time-left">20</strong> s</p>
+        </div>
+      </div>
+
+      <div class="progress" id="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress__bar" id="progress-bar"></div>
+      </div>
+      <div class="timer" aria-hidden="true"><div class="timer__bar" id="timer-bar"></div></div>
+
+      <article class="card" id="card">
+        <p class="qtype" id="qtype"></p>
+        <h2 id="question-text" class="question" tabindex="-1">Loading…</h2>
+
+        <div id="options" class="options" role="group" aria-labelledby="question-text"></div>
+
+        <div id="text-answer" class="text-answer" hidden>
+          <label class="text-answer__label" for="answer-input">Your answer</label>
+          <input id="answer-input" class="text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <p id="hint" class="hint"></p>
+        </div>
+
+        <div id="feedback" class="feedback" role="status" aria-live="polite" hidden>
+          <p id="feedback-title" class="feedback__title"></p>
+          <p id="feedback-text" class="feedback__text"></p>
+        </div>
+
+        <div class="card__actions">
+          <button id="fifty-btn" class="btn btn--ghost btn--small" type="button">50/50 lifeline: <span id="fifty-left">1 left</span></button>
+          <button id="check-btn" class="btn btn--primary" type="button" hidden>Check answer</button>
+          <button id="next-btn" class="btn btn--primary" type="button" hidden>Next question</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="results-section" class="results" aria-labelledby="results-title" hidden>
+      <h1 id="results-title" class="results__title" tabindex="-1">Your results</h1>
+
+      <div class="results__summary">
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+            <circle class="ring__bg" cx="60" cy="60" r="54"></circle>
+            <circle class="ring__fg" id="ring" cx="60" cy="60" r="54"></circle>
+          </svg>
+          <p class="ring__label"><span id="percent">0</span>%</p>
+        </div>
+        <div>
+          <p id="verdict" class="verdict"></p>
+          <p id="result-text" class="results__text"></p>
+          <p id="best-text" class="results__best"></p>
+        </div>
+      </div>
+
+      <dl class="stats stats--results">
+        <div class="stat"><dt>Points</dt><dd id="r-points">0</dd></div>
+        <div class="stat"><dt>Correct</dt><dd id="r-correct">0</dd></div>
+        <div class="stat"><dt>Best streak</dt><dd id="r-streak">0</dd></div>
+        <div class="stat"><dt>Average time</dt><dd id="r-time">0 s</dd></div>
+      </dl>
+
+      <div class="results__actions">
+        <button id="retry-btn" class="btn btn--primary" type="button">Play again</button>
+        <button id="share-btn" class="btn btn--ghost" type="button">Copy my score</button>
+        <a class="btn btn--ghost" href="index.html">Change topic</a>
+        <a class="btn btn--ghost" href="scores.html">All scores</a>
+      </div>
+      <p id="copy-status" class="copy-status" role="status"></p>
+
+      <h2 class="section-title">Review your answers</h2>
+      <ol id="review" class="review"></ol>
+    </section>
+
+    <div id="confetti" class="confetti" aria-hidden="true"></div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built with HTML5, CSS3 and vanilla JavaScript.</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/quiz.js"></script>
+</body>
+</html>

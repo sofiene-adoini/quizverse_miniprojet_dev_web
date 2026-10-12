@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+  <meta name="description" content="QuizVerse: an interactive web development quiz with four question types, difficulty levels and instant feedback.">
+  <title>QuizVerse – How well do you know the web?</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="QuizVerse home">
+      <span class="logo__mark" aria-hidden="true">Q</span>
+      <span>QuizVerse</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a class="nav__link" href="index.html" aria-current="page">Home</a>
+      <a class="nav__link" href="scores.html">Scores</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span class="visually-hidden">Dark mode</span><span class="theme-toggle__icon" aria-hidden="true"></span></button>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero__title">How well do you know the web?</h1>
+      <p class="hero__lead">Pick a topic and a difficulty, answer against the clock and see instantly whether you got it right.</p>
+    </section>
+
+    <form class="start-form" action="quiz.html" method="get">
+      <fieldset class="group">
+        <legend class="section-title">1. Choose your topic</legend>
+        <div class="categories">
+          <label class="cat">
+            <input type="radio" name="category" value="html" checked>
+            <span class="cat__body">
+              <span class="cat__icon cat__icon--pink" aria-hidden="true">&lt;/&gt;</span>
+              <span class="cat__title">HTML5</span>
+              <span class="cat__desc">Tags, semantics and forms</span>
+              <span class="cat__count" data-count="html"></span>
+              <span class="cat__best" data-best="html"></span>
+            </span>
+          </label>
+          <label class="cat">
+            <input type="radio" name="category" value="css">
+            <span class="cat__body">
+              <span class="cat__icon cat__icon--yellow" aria-hidden="true">{ }</span>
+              <span class="cat__title">CSS3</span>
+              <span class="cat__desc">Selectors, Flexbox and Grid</span>
+              <span class="cat__count" data-count="css"></span>
+              <span class="cat__best" data-best="css"></span>
+            </span>
+          </label>
+          <label class="cat">
+            <input type="radio" name="category" value="js">
+            <span class="cat__body">
+              <span class="cat__icon cat__icon--mint" aria-hidden="true">JS</span>
+              <span class="cat__title">JavaScript</span>
+              <span class="cat__desc">Types, arrays and the DOM</span>
+              <span class="cat__count" data-count="js"></span>
+              <span class="cat__best" data-best="js"></span>
+            </span>
+          </label>
+          <label class="cat">
+            <input type="radio" name="category" value="web">
+            <span class="cat__body">
+              <span class="cat__icon cat__icon--blue" aria-hidden="true">www</span>
+              <span class="cat__title">Web and accessibility</span>
+              <span class="cat__desc">HTTP, WCAG and good practice</span>
+              <span class="cat__count" data-count="web"></span>
+              <span class="cat__best" data-best="web"></span>
+            </span>
+          </label>
+          <label class="cat">
+            <input type="radio" name="category" value="mix">
+            <span class="cat__body">
+              <span class="cat__icon cat__icon--white" aria-hidden="true">?!</span>
+              <span class="cat__title">Mixed</span>
+              <span class="cat__desc">Random questions from every topic</span>
+              <span class="cat__count" data-count="mix"></span>
+              <span class="cat__best" data-best="mix"></span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend class="section-title">2. Pick a difficulty</legend>
+        <div class="seg">
+          <label class="seg__item">
+            <input type="radio" name="level" value="easy">
+            <span class="seg__body"><strong>Easy</strong><span>30 s per question, points ×1</span></span>
+          </label>
+          <label class="seg__item">
+            <input type="radio" name="level" value="medium" checked>
+            <span class="seg__body"><strong>Medium</strong><span>20 s per question, points ×1.5</span></span>
+          </label>
+          <label class="seg__item">
+            <input type="radio" name="level" value="hard">
+            <span class="seg__body"><strong>Hard</strong><span>12 s per question, points ×2</span></span>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend class="section-title">3. How many questions?</legend>
+        <div class="seg">
+          <label class="seg__item">
+            <input type="radio" name="count" value="5">
+            <span class="seg__body"><strong>5</strong><span>Quick round</span></span>
+          </label>
+          <label class="seg__item">
+            <input type="radio" name="count" value="8">
+            <span class="seg__body"><strong>8</strong><span>Standard</span></span>
+          </label>
+          <label class="seg__item">
+            <input type="radio" name="count" value="10" checked>
+            <span class="seg__body"><strong>10</strong><span>Full challenge</span></span>
+          </label>
+        </div>
+      </fieldset>
+
+      <button class="btn btn--primary btn--big" type="submit">Start the quiz</button>
+    </form>
+
+    <section class="home-block" aria-labelledby="types-title">
+      <h2 id="types-title" class="section-title">Four ways to answer</h2>
+      <ul class="types">
+        <li class="type"><strong>Single choice</strong><span>Pick the one right answer out of four.</span></li>
+        <li class="type"><strong>True or false</strong><span>Decide whether a statement holds.</span></li>
+        <li class="type"><strong>Select all that apply</strong><span>Tick every correct option, no more, no less.</span></li>
+        <li class="type"><strong>Type the answer</strong><span>Write a keyword or a CSS property yourself.</span></li>
+      </ul>
+    </section>
+
+    <section class="home-block" aria-labelledby="rules-title">
+      <h2 id="rules-title" class="section-title">How scoring works</h2>
+      <ol class="rules__list">
+        <li class="rule"><strong>Points</strong> grow with speed and streaks, then are multiplied by the difficulty.</li>
+        <li class="rule"><strong>50/50</strong> lifeline: remove two wrong options once per game on single-choice questions.</li>
+        <li class="rule"><strong>Keyboard friendly</strong>: press 1 to 4 to answer, Enter to confirm.</li>
+      </ol>
+    </section>
+
+    <section class="home-block" aria-labelledby="progress-title">
+      <h2 id="progress-title" class="section-title">Your progress</h2>
+      <dl class="stats">
+        <div class="stat"><dt>Games played</dt><dd id="stat-played">0</dd></div>
+        <div class="stat"><dt>Average accuracy</dt><dd id="stat-avg">–</dd></div>
+        <div class="stat"><dt>Total points</dt><dd id="stat-points">0</dd></div>
+      </dl>
+      <p class="home-link"><a href="scores.html">See all my scores</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built with HTML5, CSS3 and vanilla JavaScript.</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
