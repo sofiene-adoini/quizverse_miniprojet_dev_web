@@ -130,7 +130,7 @@ button { font: inherit; }
 .quiz__top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
 .quiz__title { font-size: 1.8rem; font-weight: 900; }
 .quiz__counter { color: var(--muted); font-weight: 700; }
-.quiz__stats { display: flex; gap: .6rem; }
+.quiz__stats { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .6rem; }
 .chip {
   padding: .35rem 1rem; border-radius: 999px; font-weight: 700;
   background: var(--surface); border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
@@ -210,12 +210,14 @@ button { font: inherit; }
 /* 8. Animations */
 .hero__title { animation: rise .7s ease both; }
 .is-enter { animation: rise .35s ease; }
+.is-leaving { animation: leave-card .2s ease forwards; }
 .card.is-wrong { animation: shake .4s ease; }
 .chip.bump { animation: pop .4s ease; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
 @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
 @keyframes pulse { to { transform: scale(1.08); } }
+@keyframes leave-card { to { opacity: 0; transform: translateX(-24px); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -231,6 +233,8 @@ button { font: inherit; }
   .start-form .btn { width: 100%; }
 }
 @media (max-width: 480px) {
+  .quiz__stats { width: 100%; justify-content: flex-start; }
+  .chip { padding-right: .7rem; padding-left: .7rem; }
   .results__summary { justify-content: center; text-align: center; }
   .results__actions .btn { width: 100%; }
   .card__actions .btn { width: 100%; }

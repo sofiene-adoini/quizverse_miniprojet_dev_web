@@ -1,4 +1,4 @@
-/* Theme (dark/light): applied immediately, remembered between visits. */
+
 (function () {
   'use strict';
   var KEY = 'quizverse-theme';

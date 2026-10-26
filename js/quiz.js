@@ -9,6 +9,8 @@
   };
   var KIND_LABELS = { single: 'Single choice', tf: 'True or false', multi: 'Select all that apply', text: 'Type the answer' };
   var RING_LENGTH = 339.3; // 2 * PI * 54
+  var BASE_POINTS = 20;
+  var MIN_POINTS = 5;
 
   var $ = function (id) { return document.getElementById(id); };
   var has = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
@@ -56,13 +58,16 @@
   var pool = category === 'mix'
     ? Object.keys(QUIZ_DATA).reduce(function (all, k) { return all.concat(QUIZ_DATA[k].questions); }, [])
     : QUIZ_DATA[category].questions;
-  var questions = shuffle(pool).slice(0, count).map(prepare);
+  var questions;
   var title = QV.labels[category] + ' quiz';
 
   /* ---------- State ---------- */
   var current = 0, points = 0, correctCount = 0, streak = 0, bestStreak = 0;
   var fiftyLeft = 1, locked = false, timeLeft = level.time, timerId = null;
-  var log = [], times = [];
+  var log = [], times = [], timePenaltyTotal = 0, leaving = false, confettiTimer = null;
+
+  function buildQuestions() { questions = shuffle(pool).slice(0, count).map(prepare); }
+  buildQuestions();
 
   $('quiz-title').textContent = title;
   $('level-info').textContent = level.label + ' level: ' + level.time + ' s per question, points ×' + level.mult;
@@ -75,6 +80,9 @@
     $('time-left').textContent = timeLeft;
     $('timer-bar').style.width = (timeLeft / level.time * 100) + '%';
     $('timer-chip').classList.toggle('is-low', timeLeft <= 5);
+    var elapsed = level.time - timeLeft;
+    var penalty = Math.round((BASE_POINTS - MIN_POINTS) * elapsed / level.time);
+    $('potential').textContent = Math.round((BASE_POINTS - penalty + Math.min(streak, 5)) * level.mult);
   }
   function stopTimer() { clearInterval(timerId); }
   function startTimer() {
@@ -149,7 +157,7 @@
     updateFifty();
 
     var card = $('card');
-    card.classList.remove('is-wrong', 'is-enter');
+    card.classList.remove('is-wrong', 'is-enter', 'is-leaving');
     void card.offsetWidth; // restart the CSS animation
     card.classList.add('is-enter');
 
@@ -201,13 +209,16 @@
       });
     }
 
-    /* Points: (10 + speed bonus up to 5 + streak bonus up to 5) × level multiplier */
-    var gained = 0;
+    /* Correct answers lose points as time passes, with a floor of MIN_POINTS. */
+    var gained = 0, timePenalty = 0;
     if (ok) {
       streak++;
       bestStreak = Math.max(bestStreak, streak);
       correctCount++;
-      gained = Math.round((10 + Math.round(timeLeft / level.time * 5) + Math.min(streak - 1, 5)) * level.mult);
+      var elapsed = level.time - timeLeft;
+      timePenalty = Math.round((BASE_POINTS - MIN_POINTS) * elapsed / level.time);
+      gained = Math.round((BASE_POINTS - timePenalty + Math.min(streak - 1, 5)) * level.mult);
+      timePenaltyTotal += Math.round(timePenalty * level.mult);
       points += gained;
       $('score').textContent = points;
       var chip = $('score').parentNode;
@@ -218,13 +229,13 @@
     }
     $('streak').textContent = streak;
     times.push(a.timeout ? level.time : level.time - timeLeft);
-    log.push({ kind: q.kind, text: q.text, chosen: chosen, answer: answerText(q), ok: ok, explanation: q.explanation });
+    log.push({ kind: q.kind, text: q.text, chosen: chosen, answer: answerText(q), ok: ok, explanation: q.explanation, timePenalty: timePenalty });
 
     /* Feedback message (announced by the live region) */
     var fb = $('feedback');
     fb.className = 'feedback ' + (ok ? 'feedback--ok' : 'feedback--ko');
     $('feedback-title').textContent = ok
-      ? 'Correct! +' + gained + ' points' + (streak >= 2 ? ', streak of ' + streak : '')
+      ? 'Correct! +' + gained + ' points (time penalty -' + Math.round(timePenalty * level.mult) + ')' + (streak >= 2 ? ', streak of ' + streak : '')
       : (a.timeout ? 'Time’s up!' : 'Not quite.');
     $('feedback-text').textContent = (ok ? '' : 'The right answer is “' + answerText(q) + '”. ') + q.explanation;
     fb.hidden = false;
@@ -272,10 +283,11 @@
     $('r-correct').textContent = correctCount + '/' + total;
     $('r-streak').textContent = bestStreak;
     $('r-time').textContent = avg + ' s';
+    $('r-penalties').textContent = timePenaltyTotal;
 
     var saved = QV.save({
       date: Date.now(), category: category, level: levelKey, count: total,
-      correct: correctCount, points: points, bestStreak: bestStreak, percent: percent
+      correct: correctCount, points: points, bestStreak: bestStreak, percent: percent, timePenalty: timePenaltyTotal
     });
     var prev = saved.previous;
     $('best-text').textContent = saved.isBest ? 'New personal best on this topic!'
@@ -338,13 +350,45 @@
       s.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
       box.appendChild(s);
     }
-    setTimeout(function () { box.textContent = ''; }, 5000);
+    clearTimeout(confettiTimer);
+    confettiTimer = setTimeout(function () { box.textContent = ''; }, 5000);
+  }
+
+  function resetGame() {
+    stopTimer();
+    clearTimeout(confettiTimer);
+    current = 0; points = 0; correctCount = 0; streak = 0; bestStreak = 0;
+    fiftyLeft = 1; locked = false; timeLeft = level.time; log = []; times = [];
+    timePenaltyTotal = 0; leaving = false;
+    buildQuestions();
+    $('score').textContent = '0'; $('streak').textContent = '0';
+    $('score').parentNode.classList.remove('bump');
+    $('progress-bar').style.width = '0%'; $('progress').setAttribute('aria-valuenow', '0');
+    $('ring').style.strokeDashoffset = RING_LENGTH;
+    $('confetti').textContent = ''; $('copy-status').textContent = '';
+    $('quiz-section').hidden = false; $('results-section').hidden = true;
+    render();
   }
 
   /* ---------- Events ---------- */
   $('next-btn').addEventListener('click', function () {
-    if (current < questions.length - 1) { current++; render(); }
-    else { showResults(); }
+    if (leaving) { return; }
+    if (current < questions.length - 1) {
+      leaving = true;
+      var card = $('card');
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) { current++; leaving = false; render(); return; }
+      var finished = false, fallback;
+      function advance() {
+        if (finished) { return; }
+        finished = true; clearTimeout(fallback); card.removeEventListener('animationend', onEnd);
+        current++; leaving = false; render();
+      }
+      function onEnd(e) { if (e.target === card) { advance(); } }
+      card.addEventListener('animationend', onEnd);
+      fallback = setTimeout(advance, 250);
+      card.classList.add('is-leaving');
+    } else { showResults(); }
   });
 
   $('check-btn').addEventListener('click', function () {
@@ -359,7 +403,7 @@
     if (e.key === 'Enter') { e.preventDefault(); $('check-btn').click(); }
   });
 
-  $('retry-btn').addEventListener('click', function () { window.location.reload(); });
+  $('retry-btn').addEventListener('click', resetGame);
 
   document.addEventListener('keydown', function (e) {
     if (locked || $('quiz-section').hidden || e.ctrlKey || e.metaKey || e.altKey) { return; }
